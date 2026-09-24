@@ -7,6 +7,7 @@
   const line=document.getElementById('intro-line');
   const index=document.querySelector('.intro-index');
   const ghost=document.getElementById('apparition');
+  const heroVideo=document.querySelector('.hero-video');
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let done=false,started=false,timers=[];
   function finish(){
@@ -29,6 +30,8 @@
       audio.play().then(()=>{sound.hidden=false;sound.setAttribute('aria-pressed','true')}).catch(()=>{sound.hidden=false;sound.textContent='SOUND UNAVAILABLE'});
     }else{sound.hidden=false;sound.textContent='♪ SOUND ON'}
     video.play().catch(()=>{intro.classList.add('video-failed')});
+    // Unlock the muted city film with the same tap; some browsers pause background autoplay.
+    heroVideo?.play().catch(()=>{});
     gate.classList.add('departed');intro.classList.add('playing');
     timers.push(setTimeout(()=>line.classList.add('visible'),550),setTimeout(()=>say('He walked right past you.','02 / 03'),3200),setTimeout(()=>say('Now you see him everywhere.','03 / 03'),6100),setTimeout(finish,9000));
   }
