@@ -1,166 +1,49 @@
-import GhostMark from '@/components/GhostMark'
-import CopyContract from '@/components/CopyContract'
-
-const sightings = [
-  ['01', 'ROOFTOP', 'A silhouette above the skyline. Gone before anyone gets a clean shot.'],
-  ['02', 'TIMELINE', 'The same face. Different meme. Nobody remembers who posted it first.'],
-  ['03', 'CITY', 'Posters show up overnight. By morning, everyone swears they were always there.'],
-]
-
-const stages = [
-  ['01', 'APPEAR', 'Nobody knows where the Ghost came from.'],
-  ['02', 'HAUNT', 'Memes, sightings and community keep it moving.'],
-  ['03', 'SPREAD', 'The Ghost becomes harder to ignore.'],
-  ['04', 'RETURN', 'You cannot kill what never truly dies.'],
-]
-
 export default function Home() {
   return (
-    <main>
-      <div className="grain" aria-hidden="true" />
+    <>
 
-      <header className="nav-shell">
-        <a className="brand" href="#top">$GHOST</a>
-        <nav>
-          <a href="#sightings">SIGHTINGS</a>
-          <a href="#lore">LORE</a>
-          <a href="#token">$GHOST</a>
-        </nav>
-        <div className="nav-actions">
-          <a href="https://x.com/GhostSol5" target="_blank" rel="noreferrer">X</a>
-          <a className="solid" href="https://t.me/ghostsolchat" target="_blank" rel="noreferrer">TELEGRAM</a>
-        </div>
-      </header>
+  <div id="intro" className="intro" role="dialog" aria-label="GhostSol introduction" aria-modal="true">
+    <video id="arrival-video" autoPlay muted playsInline preload="auto" poster="/assets/walk.jpg"><source src="/assets/arrival.mp4" type="video/mp4" /></video>
+    <div className="intro-shade"></div>
+    <div className="intro-top"><span>GHOSTSOL / A SIGHTING</span><button id="skip-intro" type="button">SKIP INTRO <span aria-hidden="true">↗</span></button></div>
+    <div className="intro-copy" aria-live="polite"><span className="intro-index">01 / 03</span><p id="intro-line">Nobody noticed him arrive.</p></div>
+    <div className="intro-progress"><span></span></div>
+  </div>
 
-      <section className="hero" id="top">
-        <div className="moon" aria-hidden="true" />
-        <div className="smoke smoke-a" aria-hidden="true" />
-        <div className="smoke smoke-b" aria-hidden="true" />
+  <header className="site-header">
+    <a className="brand" href="#top" aria-label="GhostSol home"><span className="brand-mark">G<span className="mark-ghost">◕</span>ST</span><span className="brand-sub">ON SOLANA</span></a>
+    <nav aria-label="Main navigation"><a href="#sighting">THE SIGHTING</a><a href="#evidence">EVIDENCE</a><a href="#community">THE CROWD</a></nav>
+    <a className="header-join" href="https://t.me/ghostsolchat" target="_blank" rel="noopener noreferrer">ENTER THE CHAT <span aria-hidden="true">↗</span></a>
+  </header>
 
-        <div className="skyline skyline-back" aria-hidden="true">
-          {Array.from({ length: 18 }).map((_, i) => <i key={i} />)}
-        </div>
-        <div className="skyline skyline-front" aria-hidden="true">
-          {Array.from({ length: 14 }).map((_, i) => <i key={i} />)}
-        </div>
+  <main id="top">
+    <section className="hero" aria-labelledby="hero-title">
+      <video className="hero-video" autoPlay muted loop playsInline preload="metadata" poster="/assets/city.jpg"><source src="/assets/reveal.mp4" type="video/mp4" /></video>
+      <div className="hero-grain"></div>
+      <div className="hero-topline"><span>AN UNCONFIRMED SIGHTING</span><span>EST. SOMEWHERE ON SOLANA</span></div>
+      <div className="hero-content">
+        <p className="eyebrow"><span className="red-square"></span> THE CITY HAS A NEW RUMOUR</p>
+        <h1 id="hero-title">YOU SAW<br /><em>NOTHING.</em></h1>
+        <div className="hero-bottom"><p>He walked right past you.<br />Now he's everywhere.</p><a className="round-scroll" href="#sighting" aria-label="Explore the story">↓</a></div>
+      </div>
+      <div className="hero-edge">$GHOSTSOL <span>///</span> JUST MEMES. JUST COMMUNITY. JUST GHOST.</div>
+    </section>
 
-        <div className="hero-copy">
-          <p className="eyebrow">GHOSTSOL · SOLANA · SIGHTING 001</p>
-          <h1>YOU SAW<br />NOTHING.</h1>
-          <p className="lede">
-            A Ghost inside the Solana ecosystem. Mysterious, unpredictable, impossible to keep down.
-            No promises. No guarantees. Just memes and a story that refuses to stay buried.
-          </p>
-          <div className="hero-actions">
-            <a className="primary" href="https://t.me/ghostsolchat" target="_blank" rel="noreferrer">JOIN THE COMMUNITY</a>
-            <a className="secondary" href="https://x.com/GhostSol5" target="_blank" rel="noreferrer">FOLLOW THE SIGHTINGS ↗</a>
-          </div>
-        </div>
+    <section id="sighting" className="story section-wrap">
+      <div className="section-label"><span>01</span><span>THE SIGHTING</span><span>FILE STILL OPEN</span></div>
+      <div className="story-grid"><div className="story-copy"><p className="small-red">IT STARTED WITH A WALK.</p><h2>HE WAS<br /><i>NEVER</i><br />HERE.</h2><p>One minute, just another face in the crowd. The next, his face was on every wall in the city.</p><p>He vanishes without warning, then turns up where nobody expected. Every sighting gives the city another story to tell.</p><span className="handnote">Or can they?</span></div><figure className="story-image"><img src="/assets/walk.jpg" alt="GhostSol walking unnoticed through a busy city" loading="lazy" /><figcaption>FIG 001 — LAST KNOWN WALK / LOCATION UNKNOWN</figcaption></figure></div>
+    </section>
 
-        <div className="apparition" aria-label="GhostSol apparition">
-          <div className="apparition-glow" />
-          <GhostMark className="ghost-mark" />
-          <span className="sighting-tag">THE GHOST IS ALREADY HERE.</span>
-        </div>
+    <section className="interlude" aria-label="The rumour"><div className="interlude-inner"><span>WHISPERS GOT LOUDER.</span><strong>THEN THE CITY<br />LOOKED UP.</strong></div></section>
 
-        <div className="hero-note note-left">SAME CITY.<br />NEW GHOST.</div>
-        <div className="hero-note note-right">JUST MEMES.<br />JUST COMMUNITY.<br />JUST $GHOST.</div>
-      </section>
+    <section id="evidence" className="evidence section-wrap"><div className="section-label"><span>02</span><span>COLLECTED EVIDENCE</span><span>DRAW YOUR OWN CONCLUSIONS</span></div><div className="evidence-intro"><h2>THE GHOST<br />GETS AROUND.</h2><p>Every rumour leaves a trace.<br />These are ours.</p></div><div className="evidence-grid"><figure className="evidence-large"><img src="/assets/alley.jpg" alt="GhostSol in a dark alley under the words You Saw Nothing" loading="lazy" /><figcaption><span>01 / THE ALLEY</span><span>YOU SAW NOTHING.</span></figcaption></figure><figure className="evidence-small"><img src="/assets/wall.jpg" alt="GhostSol street poster asking if anyone has seen the ghost" loading="lazy" /><figcaption><span>02 / THE WALL</span><span>HAVE YOU SEEN HIM?</span></figcaption></figure><figure className="evidence-wide"><img src="/assets/morning.jpg" alt="GhostSol overlooks the city at sunrise" loading="lazy" /><figcaption><span>03 / THE ROOFTOP</span><span>JUST ANOTHER NIGHT.</span></figcaption></figure></div></section>
 
-      <section className="ticker" aria-label="GhostSol motto">
-        <div>YOU SAW NOTHING · NO ROADMAP · NO PROMISES · JUST MEMES · YOU SAW NOTHING · YOU SAW NOTHING · NO ROADMAP · NO PROMISES · JUST MEMES · YOU SAW NOTHING ·</div>
-      </section>
+    <section className="manifesto"><div className="manifesto-image" role="img" aria-label="GhostSol towering above the night city"></div><div className="manifesto-content"><span className="small-red">THE ONLY THING WE KNOW FOR SURE</span><h2>NO ROADMAP.<br />NO PROMISES.<br /><i>JUST MEMES.</i></h2><p>$GHOSTSOL is a community driven meme coin on Solana. The ghost disappears, returns and keeps moving. The community decides where his story goes next.</p><div className="solana-note"><span>◈</span> ON SOLANA</div></div></section>
 
-      <section className="section" id="sightings">
-        <div className="section-head">
-          <div>
-            <p className="eyebrow">EVIDENCE BOARD</p>
-            <h2>SIGHTINGS</h2>
-          </div>
-          <p>
-            GhostSol should feel less like a token brochure and more like an urban legend leaking into the timeline.
-            Every post becomes another piece of evidence.
-          </p>
-        </div>
-
-        <div className="evidence-grid">
-          {sightings.map(([n, title, body]) => (
-            <article className="evidence-card" key={n}>
-              <div className="evidence-photo">
-                <div className={`mini-ghost ghost-${n}`}><GhostMark /></div>
-                <div className="city-lines" />
-                <span className="stamp">CASE {n}</span>
-              </div>
-              <div className="evidence-copy">
-                <span>{n}</span>
-                <h3>{title}</h3>
-                <p>{body}</p>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="lore" id="lore">
-        <div className="lore-quote">
-          <p className="eyebrow">THE NARRATIVE</p>
-          <h2>YOU CAN’T KILL<br />WHAT NEVER<br />TRULY DIES.</h2>
-          <p>
-            GhostSol is built around an identity that can keep evolving with the community. New sightings, new characters,
-            new jokes, new moments — without pretending there is a corporate masterplan behind a meme.
-          </p>
-        </div>
-
-        <div className="lore-list">
-          {stages.map(([n, title, body]) => (
-            <div className="lore-row" key={n}>
-              <span>{n}</span>
-              <strong>{title}</strong>
-              <p>{body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="token-section" id="token">
-        <div className="token-visual">
-          <div className="target-ring ring-1" />
-          <div className="target-ring ring-2" />
-          <div className="target-ring ring-3" />
-          <GhostMark className="token-ghost" />
-          <span>NOT A CULT.<br />JUST MEMES.</span>
-        </div>
-
-        <div className="token-copy">
-          <p className="eyebrow">$GHOST</p>
-          <h2>NO UTILITY.<br />JUST VIBES.</h2>
-          <p className="body-copy">
-            Keep the practical information honest and simple. No fake numbers, no made-up partnerships, no manufactured urgency.
-          </p>
-          <dl>
-            <div><dt>CHAIN</dt><dd>SOLANA</dd></div>
-            <div><dt>TICKER</dt><dd>$GHOSTSOL</dd></div>
-            <div><dt>CONTRACT</dt><dd>COMING SOON</dd></div>
-          </dl>
-          <CopyContract />
-        </div>
-      </section>
-
-      <section className="community" id="community">
-        <div className="community-ghost"><GhostMark /></div>
-        <p className="eyebrow">TRANSMISSION OPEN</p>
-        <h2>THE GHOST SPEAKS<br />FIRST ON TELEGRAM.</h2>
-        <p>Follow the sightings. Add to the lore. Keep the Ghost moving.</p>
-        <div className="community-actions">
-          <a href="https://t.me/ghostsolchat" target="_blank" rel="noreferrer">JOIN TELEGRAM ↗</a>
-          <a href="https://x.com/GhostSol5" target="_blank" rel="noreferrer">FOLLOW @GHOSTSOL5 ↗</a>
-        </div>
-      </section>
-
-      <footer>
-        <strong>YOU SAW NOTHING.</strong>
-        <span>GHOSTSOL · ON SOLANA · 2026</span>
-      </footer>
-    </main>
+    <section id="community" className="community section-wrap"><div className="section-label"><span>03</span><span>JOIN THE CROWD</span><span>THE GHOST SPEAKS FIRST IN THE CHAT</span></div><div className="community-content"><span className="eyebrow">YOU'VE COME THIS FAR.</span><h2>KEEP YOUR<br /><i>EYES OPEN.</i></h2><p>Follow the sightings. Find the others. If anyone asks where you heard about us—</p><strong>YOU CAN’T KILL WHAT NEVER TRULY DIES.</strong><div className="social-actions"><a href="https://t.me/ghostsolchat" target="_blank" rel="noopener noreferrer">JOIN TELEGRAM <span>↗</span></a><a href="https://x.com/GhostSol5" target="_blank" rel="noopener noreferrer">FOLLOW ON X <span>↗</span></a></div></div><img className="community-ghost" src="/assets/portrait.jpg" alt="GhostSol wearing sunglasses and a chain" loading="lazy" /></section>
+  </main>
+  <footer><span>© GHOSTSOL</span><span>ON SOLANA · COMMUNITY DRIVEN</span><a href="#top">BACK TO THE TOP ↑</a></footer>
+  
+    </>
   )
 }
