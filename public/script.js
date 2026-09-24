@@ -12,10 +12,28 @@
   let done=false,started=false,timers=[];
   function finish(){
     if(done)return;done=true;timers.forEach(clearTimeout);
-    intro.classList.add('hidden');document.body.classList.remove('intro-active');
-    video.pause();audio.pause();
-    setTimeout(()=>{intro.setAttribute('aria-hidden','true');intro.removeAttribute('role');intro.removeAttribute('aria-modal')},900);
-    document.body.classList.add('site-entered');
+    gate.classList.add('departed');
+    if(reduced){
+      intro.classList.add('hidden');document.body.classList.remove('intro-active');
+      video.pause();audio.pause();document.body.classList.add('site-entered');
+      intro.setAttribute('aria-hidden','true');intro.removeAttribute('role');intro.removeAttribute('aria-modal');
+      return;
+    }
+    intro.classList.add('exiting');
+    const startVolume=audio.volume,fadeStarted=performance.now();
+    function fadeSound(now){
+      if(audio.paused)return;
+      const amount=Math.min((now-fadeStarted)/650,1);
+      audio.volume=startVolume*(1-amount);
+      if(amount<1)requestAnimationFrame(fadeSound);else audio.pause();
+    }
+    requestAnimationFrame(fadeSound);
+    setTimeout(()=>document.body.classList.add('site-entered'),400);
+    setTimeout(()=>{
+      intro.classList.add('hidden');document.body.classList.remove('intro-active');
+      video.pause();audio.pause();
+      intro.setAttribute('aria-hidden','true');intro.removeAttribute('role');intro.removeAttribute('aria-modal');
+    },1150);
   }
   function say(message,number){
     line.classList.remove('visible');

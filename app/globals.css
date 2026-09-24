@@ -31,3 +31,23 @@
 .haunt-jolt main{animation:haunt-jolt .28s steps(2) both}@keyframes haunt-jolt{25%{transform:translate(2px,-1px)}75%{transform:translate(-2px,1px)}}
 @media(max-width:800px){.intro-camera{top:14%;left:50%;right:auto;width:min(60vw,280px);height:55%;transform:translateX(-50%) rotate(1deg)}.intro-copy{left:6%;right:6%;width:auto;bottom:11%}.intro-copy p{font-size:clamp(2.2rem,8vw,4rem)}.entry-gate{background:linear-gradient(0deg,#050607 0%,#050607cd 52%,#05060755 100%)}.entry-gate h2{font-size:clamp(3.6rem,12.5vw,5.5rem)}.surveillance{margin:0 auto 20px;max-width:min(64vw,350px)}.scroll-apparition{width:145px;height:225px}}
 @media(prefers-reduced-motion:reduce){.cam-scan,.cam-rec,.scroll-apparition.seen{animation:none}.scroll-apparition{display:none}}
+
+/* The final CCTV frame breaks open into the city instead of cutting to a still page. */
+.intro.exiting{transition:opacity .62s ease .42s,visibility .62s ease .42s;opacity:0;visibility:hidden;pointer-events:none}
+.intro.exiting .intro-camera{transform:rotate(0deg) scale(3.5);opacity:.18;filter:blur(12px);transition:transform 1.1s cubic-bezier(.16,.84,.18,1),opacity .8s ease .24s,filter 1s ease}
+.intro.exiting .intro-copy{opacity:0;transform:translateY(-35px) scale(1.04);filter:blur(7px);transition:opacity .24s,transform .5s,filter .4s}
+.intro.exiting .intro-top,.intro.exiting .intro-progress{opacity:0;transition:opacity .2s}
+.intro.exiting:after{content:'';position:absolute;z-index:7;inset:0;pointer-events:none;background:radial-gradient(ellipse at 60% 45%,#e4e4e45c,transparent 55%);opacity:0;animation:signal-bloom .8s ease-out both}
+@keyframes signal-bloom{28%{opacity:.75}100%{opacity:0}}
+.site-header{transition:opacity .65s ease,transform .85s cubic-bezier(.2,.8,.2,1)}
+body.intro-active .site-header{opacity:0;transform:translateY(-25px)}
+body.site-entered .site-header{opacity:1;transform:translateY(0)}
+body.site-entered .hero-topline{animation:city-rise .7s .2s both}
+body.site-entered .hero-edge{animation:city-rise .8s 1s both}
+body.site-entered .hero-content .eyebrow{animation:city-rise .65s .2s both}
+body.site-entered .hero-content h1{animation:city-rise 1.15s .42s both}
+body.site-entered .hero-bottom{animation:city-rise .9s .82s both}
+body.site-entered .hero-video{animation:city-focus 1.7s cubic-bezier(.16,.84,.18,1) both}
+@keyframes city-focus{from{transform:translate3d(0,var(--hero-drift,0px),0) scale(1.22);filter:grayscale(1) contrast(1.5) brightness(.33) blur(8px)}to{transform:translate3d(0,var(--hero-drift,0px),0) scale(1.035);filter:grayscale(.4) contrast(1.12) brightness(.67) blur(0)}}
+@media(max-width:800px){.intro.exiting .intro-camera{transform:translateX(-50%) rotate(0deg) scale(3.4)}}
+@media(prefers-reduced-motion:reduce){.intro.exiting:after{animation:none}.intro.exiting .intro-camera{transform:none}.site-header{transition:none}body.intro-active .site-header{opacity:1;transform:none}}
