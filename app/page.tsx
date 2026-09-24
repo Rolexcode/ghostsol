@@ -9,7 +9,7 @@ export default function Home() {
     <div id="entry-gate" className="entry-gate"><div className="gate-inner"><span className="gate-signal">TRANSMISSION INCOMING / 001</span><h2>SOMETHING<br />WALKED INTO<br /><i>THE CITY.</i></h2><p>Some sightings are better heard.</p><div className="gate-actions"><button id="enter-sound" type="button">ENTER WITH SOUND <span>↗</span></button><button id="enter-muted" type="button">CONTINUE MUTED</button></div></div></div>
     <div className="intro-copy" aria-live="polite"><span className="intro-index">01 / 03</span><p id="intro-line">Nobody noticed him arrive.</p></div>
     <div className="intro-progress"><span></span></div>
-    <audio id="intro-audio" preload="auto" src="/assets/ghostsol-pulse.ogg" />
+    <audio id="intro-audio" preload="auto" src="/assets/ghostsol-intro.m4a" />
   </div>
 
   <header className="site-header">
