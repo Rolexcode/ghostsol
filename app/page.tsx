@@ -3,12 +3,13 @@ export default function Home() {
     <>
 
   <div id="intro" className="intro" role="dialog" aria-label="GhostSol introduction" aria-modal="true">
-    <video id="arrival-video" autoPlay muted playsInline preload="auto" poster="/assets/story-walk.jpg"><source src="/assets/arrival.mp4" type="video/mp4" /></video>
+    <video id="arrival-video" muted playsInline preload="auto" poster="/assets/story-walk.jpg"><source src="/assets/arrival.mp4" type="video/mp4" /></video>
     <div className="intro-shade"></div>
-    <div className="intro-top"><span>GHOSTSOL / A SIGHTING</span><div className="intro-controls"><button id="sound-toggle" type="button" aria-pressed="false">♪ SOUND ON</button><button id="skip-intro" type="button">SKIP <span aria-hidden="true">↗</span></button></div></div>
+    <div className="intro-top"><span>GHOSTSOL / A SIGHTING</span><div className="intro-controls"><button id="sound-toggle" type="button" aria-pressed="false" hidden>♪ SOUND OFF</button><button id="skip-intro" type="button">SKIP <span aria-hidden="true">↗</span></button></div></div>
+    <div id="entry-gate" className="entry-gate"><div className="gate-inner"><span className="gate-signal">TRANSMISSION INCOMING / 001</span><h2>SOMETHING<br />WALKED INTO<br /><i>THE CITY.</i></h2><p>Some sightings are better heard.</p><div className="gate-actions"><button id="enter-sound" type="button">ENTER WITH SOUND <span>↗</span></button><button id="enter-muted" type="button">CONTINUE MUTED</button></div></div></div>
     <div className="intro-copy" aria-live="polite"><span className="intro-index">01 / 03</span><p id="intro-line">Nobody noticed him arrive.</p></div>
     <div className="intro-progress"><span></span></div>
-    <audio id="intro-audio" preload="none" src="/assets/ghostsol-pulse.ogg" />
+    <audio id="intro-audio" preload="auto" src="/assets/ghostsol-pulse.ogg" />
   </div>
 
   <header className="site-header">
