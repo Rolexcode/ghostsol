@@ -72,7 +72,7 @@ export default function GhostGame() {
     while (slot === previousSlot.current) slot = Math.floor(Math.random() * SIGHTINGS.length);
     previousSlot.current = slot;
     const item = { slot, id: ++sequence.current };
-    popRef.current = item; setPop(item); cue('appear');
+    popRef.current = item; setFeedback(null); setPop(item); cue('appear');
     // A quick flicker stays catchable on touch screens, then gets a little faster.
     const life = Math.max(920, 1230 - elapsed * 6 + (comboRef.current === 0 ? 90 : 0));
     vanishTimer.current = setTimeout(() => {
