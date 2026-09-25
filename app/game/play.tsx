@@ -79,12 +79,12 @@ export default function GhostGame() {
     const item = { slot, id: ++sequence.current };
     popRef.current = item; setFeedback(null); setPop(item); cue('appear');
     // A quick flicker stays catchable on touch screens, then gets a little faster.
-    const life = Math.max(680, 970 - elapsed * 7 + (comboRef.current === 0 ? 80 : 0));
+    const life = Math.max(600, 800 - elapsed * 5 + (comboRef.current === 0 ? 70 : 0));
     vanishTimer.current = setTimeout(() => {
       if (generation.current !== token || popRef.current?.id !== item.id) return;
       popRef.current = null; setPop(null); comboRef.current = 0; setCombo(0);
       setFeedback({ slot, text: 'VANISHED', id: item.id }); cue('miss');
-      spawnTimer.current = setTimeout(() => spawn(token), 170 + Math.random() * 210);
+      spawnTimer.current = setTimeout(() => spawn(token), 110 + Math.random() * 140);
     }, life);
   }, [cue, finish]);
 
@@ -110,7 +110,7 @@ export default function GhostGame() {
       if (remaining <= 0) finish(); else frame.current = requestAnimationFrame(tick);
     };
     frame.current = requestAnimationFrame(tick);
-    spawnTimer.current = setTimeout(() => spawn(token), 470);
+    spawnTimer.current = setTimeout(() => spawn(token), 360);
   };
 
   const catchGhost = (slot: number) => {
@@ -128,7 +128,7 @@ export default function GhostGame() {
     scoreRef.current += points; setScore(scoreRef.current);
     setFeedback({ slot, text: `+${points}`, id: active.id }); cue('catch');
     const token = generation.current;
-    spawnTimer.current = setTimeout(() => spawn(token), 150 + Math.random() * 170);
+    spawnTimer.current = setTimeout(() => spawn(token), 90 + Math.random() * 120);
   };
 
   const toggleMusic = () => {
@@ -169,7 +169,7 @@ export default function GhostGame() {
         <span className="cctv-time">09.25.26 &nbsp; 03:14:{String(ROUND - seconds).padStart(2, '0')} &nbsp; / &nbsp; CAMERA FEED</span>
         <span className="cctv-signal">SIGNAL {pop ? 'UNSTABLE' : 'STABLE'} <em>▂▄▆</em></span>
       </div>
-      {pop && <button type="button" key={pop.id} className="roaming-ghost" style={{ left: `${SIGHTINGS[pop.slot][0]}%`, top: `${SIGHTINGS[pop.slot][1]}%` }} onClick={() => catchGhost(pop.slot)} aria-label="Catch the floating ghost">
+      {pop && <button type="button" key={pop.id} className={`roaming-ghost ${pop.slot % 2 ? 'zip-left' : 'zip-right'}`} style={{ left: `${SIGHTINGS[pop.slot][0]}%`, top: `${SIGHTINGS[pop.slot][1]}%` }} onClick={() => catchGhost(pop.slot)} aria-label="Catch the floating ghost">
         <span className="ghost-figure"><img src="/assets/ghost-game.webp" alt="" draggable={false}/></span>
       </button>}
       {feedback && <span className={`roaming-feedback ${feedback.text === 'VANISHED' || feedback.text === 'EMPTY' ? 'miss' : ''}`} key={feedback.id} style={{ left: `${SIGHTINGS[feedback.slot][0]}%`, top: `${SIGHTINGS[feedback.slot][1]}%` }}><img src="/assets/ghost-game.webp" alt="" draggable={false}/><b>{feedback.text}</b></span>}
