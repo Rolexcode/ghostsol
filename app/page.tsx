@@ -44,7 +44,7 @@ export default function Home() {
 
     <section id="game" className="game-teaser" aria-labelledby="game-heading">
       <div className="game-scene"><img src="/assets/game-concept.jpg" alt="Concept artwork showing GhostSol moving through a city game world" loading="lazy" /><span className="scene-corner">A GLIMPSE OF WHAT'S NEXT / 001</span></div>
-      <div className="game-copy"><span className="small-red">THE STORY DOESN'T END HERE</span><h2 id="game-heading">NEXT TIME,<br /><i>YOU FOLLOW.</i></h2><p>One day, the city might be yours to explore. A GhostSol game is on our minds, but the doors aren't open yet.</p><span className="coming-wrap" tabIndex={0} aria-describedby="game-tooltip"><span className="coming-soon">GAME <span>COMING SOON</span></span></span><span id="game-tooltip" role="tooltip">The game is a future concept. No release date has been announced.</span></div>
+      <div className="game-copy"><span className="small-red">THE STORY DOESN'T END HERE</span><h2 id="game-heading">NEXT TIME,<br /><i>YOU FOLLOW.</i></h2><p>The city has its first playable sighting. Stay unseen, find the echoes and see how long you last.</p><a className="coming-wrap" href="/game"><span className="coming-soon">PLAY THE PROTOTYPE <span>↗</span></span></a><span className="game-prototype-note">AN EARLY GAME CONCEPT / MORE TO COME</span></div>
     </section>
 
     <div className="ca-strip"><span>CONTRACT ADDRESS</span><strong>STILL UNDER WRAPS.</strong><span className="ca-status" title="Contract address has not been announced">CA COMING SOON</span></div>
