@@ -154,7 +154,12 @@ export default function GhostGame() {
     <div className="hunt-hud"><div><small>TIME LEFT</small><strong>{seconds.toString().padStart(2, '0')}<i>s</i></strong></div><div><small>GHOSTS CAUGHT</small><strong>{caught.toString().padStart(2, '0')}</strong></div><div><small>SCORE</small><strong>{score.toString().padStart(3, '0')}</strong></div><div><small>PERSONAL BEST</small><strong>{best.toString().padStart(3, '0')}</strong></div></div>
     <div className={`hunt-scene ${pop ? 'is-haunted' : ''}`}>
       <div className="hunt-sky" aria-hidden="true"><span className="hunt-fog"/></div>
-      <span className="sighting-camera" aria-hidden="true">● REC &nbsp; / &nbsp; 03:14 AM</span>
+      <div className="cctv-layer" aria-hidden="true">
+        <span className="cctv-corner cctv-tl"/><span className="cctv-corner cctv-tr"/><span className="cctv-corner cctv-bl"/><span className="cctv-corner cctv-br"/>
+        <span className="sighting-camera"><i/> REC <b>CAM 03</b></span>
+        <span className="cctv-time">09.25.26 &nbsp; 03:14:{String(ROUND - seconds).padStart(2, '0')} &nbsp; / &nbsp; CAMERA FEED</span>
+        <span className="cctv-signal">SIGNAL {pop ? 'UNSTABLE' : 'STABLE'} <em>▂▄▆</em></span>
+      </div>
       {pop && <button type="button" key={pop.id} className="roaming-ghost" style={{ left: `${SIGHTINGS[pop.slot][0]}%`, top: `${SIGHTINGS[pop.slot][1]}%` }} onClick={() => catchGhost(pop.slot)} aria-label="Catch the floating ghost">
         <span className="ghost-figure"><img src="/assets/ghost-game.webp" alt="" draggable={false}/></span>
       </button>}
