@@ -3,6 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 const ROUND = 40;
+const SIGHTINGS = [
+  [18, 19], [42, 13], [76, 22], [62, 34], [28, 39], [85, 47],
+  [14, 58], [48, 53], [72, 64], [34, 74], [57, 80], [83, 76],
+] as const;
 type Mode = 'ready' | 'playing' | 'ended';
 type Pop = { slot: number; id: number } | null;
 
@@ -15,7 +19,7 @@ export default function GhostGame() {
   const [feedback, setFeedback] = useState<{ slot: number; text: string; id: number } | null>(null);
   const [best, setBest] = useState(0);
   const modeRef = useRef<Mode>('ready'), popRef = useRef<Pop>(null), scoreRef = useRef(0), comboRef = useRef(0);
-  const startAt = useRef(0), previousSlot = useRef(-1), sequence = useRef(0), generation = useRef(0), sound = useRef<AudioContext | null>(null);
+  const startAt = useRef(0), previousSlot = useRef(-1), sequence = useRef(0), generation = useRef(0), sound = useRef<AudioContext | null>(null), ambience = useRef<HTMLAudioElement | null>(null);
   const spawnTimer = useRef<ReturnType<typeof setTimeout> | null>(null), vanishTimer = useRef<ReturnType<typeof setTimeout> | null>(null), frame = useRef(0);
 
   const cue = useCallback((kind: 'appear' | 'catch' | 'miss') => {
@@ -40,6 +44,7 @@ export default function GhostGame() {
   const finish = useCallback(() => {
     if (modeRef.current !== 'playing') return;
     modeRef.current = 'ended'; generation.current++; stopTimers(); popRef.current = null;
+    ambience.current?.pause();
     setPop(null); setMode('ended'); setSeconds(0);
     try {
       const prior = Number(localStorage.getItem('ghostsol-best') || 0);
@@ -51,18 +56,18 @@ export default function GhostGame() {
     if (generation.current !== token || modeRef.current !== 'playing') return;
     const elapsed = (performance.now() - startAt.current) / 1000;
     if (elapsed >= ROUND) { finish(); return; }
-    let slot = Math.floor(Math.random() * 9);
-    while (slot === previousSlot.current) slot = Math.floor(Math.random() * 9);
+    let slot = Math.floor(Math.random() * SIGHTINGS.length);
+    while (slot === previousSlot.current) slot = Math.floor(Math.random() * SIGHTINGS.length);
     previousSlot.current = slot;
     const item = { slot, id: ++sequence.current };
     popRef.current = item; setPop(item); cue('appear');
-    // The window closes gently at first, then tightens as the visitor learns the rhythm.
-    const life = Math.max(850, 1480 - elapsed * 13 + (comboRef.current === 0 ? 100 : 0));
+    // A quick flicker stays catchable on touch screens, then gets a little faster.
+    const life = Math.max(710, 1020 - elapsed * 6 + (comboRef.current === 0 ? 90 : 0));
     vanishTimer.current = setTimeout(() => {
       if (generation.current !== token || popRef.current?.id !== item.id) return;
       popRef.current = null; setPop(null); comboRef.current = 0; setCombo(0);
       setFeedback({ slot, text: 'VANISHED', id: item.id }); cue('miss');
-      spawnTimer.current = setTimeout(() => spawn(token), 300 + Math.random() * 170);
+      spawnTimer.current = setTimeout(() => spawn(token), 280 + Math.random() * 220);
     }, life);
   }, [cue, finish]);
 
@@ -71,6 +76,13 @@ export default function GhostGame() {
     const token = generation.current;
     if (!sound.current) sound.current = new AudioContext();
     sound.current.resume().catch(() => {});
+    if (!ambience.current) {
+      ambience.current = new Audio('/assets/ghostsol-pulse.ogg');
+      ambience.current.loop = true;
+      ambience.current.volume = .27;
+    }
+    ambience.current.currentTime = 0;
+    ambience.current.play().catch(() => {});
     modeRef.current = 'playing'; popRef.current = null; scoreRef.current = 0; comboRef.current = 0; previousSlot.current = -1;
     setMode('playing'); setScore(0); setCombo(0); setPop(null); setFeedback(null); setSeconds(ROUND);
     startAt.current = performance.now();
@@ -98,12 +110,12 @@ export default function GhostGame() {
     scoreRef.current += points; setScore(scoreRef.current);
     setFeedback({ slot, text: `+${points}`, id: active.id }); cue('catch');
     const token = generation.current;
-    spawnTimer.current = setTimeout(() => spawn(token), 230 + Math.random() * 160);
+    spawnTimer.current = setTimeout(() => spawn(token), 250 + Math.random() * 190);
   };
 
   useEffect(() => {
     try { setBest(Number(localStorage.getItem('ghostsol-best') || 0)); } catch { /* optional */ }
-    return () => { generation.current++; stopTimers(); sound.current?.close().catch(() => {}); sound.current = null; };
+    return () => { generation.current++; stopTimers(); ambience.current?.pause(); ambience.current = null; sound.current?.close().catch(() => {}); sound.current = null; };
   }, []);
 
   return <div className="hunt-shell">
@@ -111,16 +123,18 @@ export default function GhostGame() {
     <div className="hunt-scene">
       <div className="hunt-sky" aria-hidden="true"><span className="hunt-moon"/><span className="hunt-fog"/></div>
       <div className="hunt-building"><div className="hunt-roof">GHOSTSOL <span>CAMERA 03 — 03:14 AM</span></div>
-        <div className="hunt-windows">{Array.from({ length: 9 }, (_, slot) => <button key={slot} className={`hunt-window ${pop?.slot === slot ? 'haunted' : ''}`} type="button" onClick={() => catchGhost(slot)} aria-label={pop?.slot === slot ? `Catch ghost in window ${slot + 1}` : `Empty window ${slot + 1}`}>
+        <div className="hunt-windows">{Array.from({ length: 9 }, (_, slot) => <div key={slot} className="hunt-window" aria-hidden="true">
           <span className="window-depth"/><span className="window-glass"/>
-          {pop?.slot === slot && <span className="window-ghost" key={pop.id}><span className="ghost-shape"><span className="ghost-shine"/><span className="ghost-glasses"/><span className="ghost-smile"/><span className="ghost-chain">$</span></span></span>}
-          {feedback?.slot === slot && <span className={`catch-feedback ${feedback.text === 'VANISHED' || feedback.text === 'EMPTY' ? 'miss' : ''}`} key={feedback.id}>{feedback.text}</span>}
           <span className="window-number">0{slot + 1}</span>
-        </button>)}</div>
+        </div>)}</div>
         <div className="hunt-building-base"><span>THE CITY SWEARS IT SAW NOTHING.</span><span>● REC</span></div>
       </div>
+      {pop && <button type="button" key={pop.id} className="roaming-ghost" style={{ left: `${SIGHTINGS[pop.slot][0]}%`, top: `${SIGHTINGS[pop.slot][1]}%` }} onClick={() => catchGhost(pop.slot)} aria-label="Catch the floating ghost">
+        <span className="ghost-shape"><span className="ghost-shine"/><span className="ghost-glasses"/><span className="ghost-smile"/><span className="ghost-chain">$</span></span>
+      </button>}
+      {feedback && <span className={`roaming-feedback ${feedback.text === 'VANISHED' || feedback.text === 'EMPTY' ? 'miss' : ''}`} key={feedback.id} style={{ left: `${SIGHTINGS[feedback.slot][0]}%`, top: `${SIGHTINGS[feedback.slot][1]}%` }}>{feedback.text}</span>}
       <span className="hunt-foreground" aria-hidden="true"/>
-      {mode !== 'playing' && <div className="hunt-overlay"><span className="play-kicker">{mode === 'ended' ? 'SIGHTING ENDED / FILE SAVED' : 'A SIGHTING IS ABOUT TO BEGIN'}</span><h2>{mode === 'ended' ? 'DID YOU SEE HIM?' : 'CATCH THE GHOST.'}</h2><p>{mode === 'ended' ? `You scored ${score} points. The ghost will be back.` : 'He appears in a window, then vanishes. Tap him before he disappears. You have 40 seconds.'}</p><button type="button" onClick={begin}>{mode === 'ended' ? 'PLAY AGAIN ↗' : 'START SIGHTING ↗'}</button><small>APPEAR → TAP → VANISH</small></div>}
+      {mode !== 'playing' && <div className="hunt-overlay"><span className="play-kicker">{mode === 'ended' ? 'SIGHTING ENDED / FILE SAVED' : 'A SIGHTING IS ABOUT TO BEGIN'}</span><h2>{mode === 'ended' ? 'DID YOU SEE HIM?' : 'CATCH THE GHOST.'}</h2><p>{mode === 'ended' ? `You scored ${score} points. The ghost will be back.` : 'He floats through the city, then vanishes. Tap him before he disappears. You have 40 seconds. Sound on for the full sighting.'}</p><button type="button" onClick={begin}>{mode === 'ended' ? 'PLAY AGAIN ↗' : 'START SIGHTING ↗'}</button><small>APPEAR → TAP → VANISH · SOUND ON</small></div>}
     </div>
     <div className="hunt-bottom"><span>01 / LOOK FOR THE WHITE GHOST</span><span>02 / TAP HIM BEFORE HE VANISHES</span><span>MISS A WINDOW: −2 POINTS</span></div>
   </div>;
