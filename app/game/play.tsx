@@ -4,8 +4,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 const ROUND = 40;
 const SIGHTINGS = [
-  [18, 19], [42, 13], [76, 22], [62, 34], [28, 39], [85, 47],
-  [14, 58], [48, 53], [72, 64], [34, 74], [57, 80], [83, 76],
+  [24, 29], [43, 25], [74, 30], [61, 38], [30, 44], [76, 49],
+  [25, 57], [48, 54], [72, 64], [36, 70], [57, 72], [75, 69],
 ] as const;
 type Mode = 'ready' | 'playing' | 'ended';
 type Pop = { slot: number; id: number } | null;
@@ -74,7 +74,7 @@ export default function GhostGame() {
     const item = { slot, id: ++sequence.current };
     popRef.current = item; setPop(item); cue('appear');
     // A quick flicker stays catchable on touch screens, then gets a little faster.
-    const life = Math.max(710, 1020 - elapsed * 6 + (comboRef.current === 0 ? 90 : 0));
+    const life = Math.max(920, 1230 - elapsed * 6 + (comboRef.current === 0 ? 90 : 0));
     vanishTimer.current = setTimeout(() => {
       if (generation.current !== token || popRef.current?.id !== item.id) return;
       popRef.current = null; setPop(null); comboRef.current = 0; setCombo(0);
