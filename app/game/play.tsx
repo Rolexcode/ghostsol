@@ -14,6 +14,7 @@ export default function GhostGame() {
   const [mode, setMode] = useState<Mode>('ready');
   const [pop, setPop] = useState<Pop>(null);
   const [score, setScore] = useState(0);
+  const [caught, setCaught] = useState(0);
   const [combo, setCombo] = useState(0);
   const [seconds, setSeconds] = useState(ROUND);
   const [feedback, setFeedback] = useState<{ slot: number; text: string; id: number } | null>(null);
@@ -84,7 +85,7 @@ export default function GhostGame() {
     ambience.current.currentTime = 0;
     ambience.current.play().catch(() => {});
     modeRef.current = 'playing'; popRef.current = null; scoreRef.current = 0; comboRef.current = 0; previousSlot.current = -1;
-    setMode('playing'); setScore(0); setCombo(0); setPop(null); setFeedback(null); setSeconds(ROUND);
+    setMode('playing'); setScore(0); setCaught(0); setCombo(0); setPop(null); setFeedback(null); setSeconds(ROUND);
     startAt.current = performance.now();
     const tick = () => {
       if (modeRef.current !== 'playing' || generation.current !== token) return;
@@ -106,6 +107,7 @@ export default function GhostGame() {
     if (vanishTimer.current) clearTimeout(vanishTimer.current);
     popRef.current = null; setPop(null);
     comboRef.current++; setCombo(comboRef.current);
+    setCaught(value => value + 1);
     const points = 10 + Math.min(20, (comboRef.current - 1) * 2);
     scoreRef.current += points; setScore(scoreRef.current);
     setFeedback({ slot, text: `+${points}`, id: active.id }); cue('catch');
@@ -119,7 +121,7 @@ export default function GhostGame() {
   }, []);
 
   return <div className="hunt-shell">
-    <div className="hunt-hud"><div><small>TIME LEFT</small><strong>{seconds.toString().padStart(2, '0')}<i>s</i></strong></div><div><small>GHOSTS CAUGHT</small><strong>{score.toString().padStart(3, '0')}</strong></div><div><small>STREAK</small><strong>{combo > 1 ? `×${combo}` : '—'}</strong></div><div><small>PERSONAL BEST</small><strong>{best.toString().padStart(3, '0')}</strong></div></div>
+    <div className="hunt-hud"><div><small>TIME LEFT</small><strong>{seconds.toString().padStart(2, '0')}<i>s</i></strong></div><div><small>GHOSTS CAUGHT</small><strong>{caught.toString().padStart(2, '0')}</strong></div><div><small>SCORE</small><strong>{score.toString().padStart(3, '0')}</strong></div><div><small>PERSONAL BEST</small><strong>{best.toString().padStart(3, '0')}</strong></div></div>
     <div className="hunt-scene">
       <div className="hunt-sky" aria-hidden="true"><span className="hunt-moon"/><span className="hunt-fog"/></div>
       <div className="hunt-building"><div className="hunt-roof">GHOSTSOL <span>CAMERA 03 — 03:14 AM</span></div>
@@ -134,8 +136,8 @@ export default function GhostGame() {
       </button>}
       {feedback && <span className={`roaming-feedback ${feedback.text === 'VANISHED' || feedback.text === 'EMPTY' ? 'miss' : ''}`} key={feedback.id} style={{ left: `${SIGHTINGS[feedback.slot][0]}%`, top: `${SIGHTINGS[feedback.slot][1]}%` }}>{feedback.text}</span>}
       <span className="hunt-foreground" aria-hidden="true"/>
-      {mode !== 'playing' && <div className="hunt-overlay"><span className="play-kicker">{mode === 'ended' ? 'SIGHTING ENDED / FILE SAVED' : 'A SIGHTING IS ABOUT TO BEGIN'}</span><h2>{mode === 'ended' ? 'DID YOU SEE HIM?' : 'CATCH THE GHOST.'}</h2><p>{mode === 'ended' ? `You scored ${score} points. The ghost will be back.` : 'He floats through the city, then vanishes. Tap him before he disappears. You have 40 seconds. Sound on for the full sighting.'}</p><button type="button" onClick={begin}>{mode === 'ended' ? 'PLAY AGAIN ↗' : 'START SIGHTING ↗'}</button><small>APPEAR → TAP → VANISH · SOUND ON</small></div>}
+      {mode !== 'playing' && <div className="hunt-overlay"><span className="play-kicker">{mode === 'ended' ? 'SIGHTING ENDED / FILE SAVED' : 'A SIGHTING IS ABOUT TO BEGIN'}</span><h2>{mode === 'ended' ? 'DID YOU SEE HIM?' : 'CATCH THE GHOST.'}</h2><p>{mode === 'ended' ? `You caught ${caught} ghosts and scored ${score} points. The ghost will be back.` : 'He floats through the city, then vanishes. Tap him before he disappears. You have 40 seconds. Sound on for the full sighting.'}</p><button type="button" onClick={begin}>{mode === 'ended' ? 'PLAY AGAIN ↗' : 'START SIGHTING ↗'}</button><small>APPEAR → TAP → VANISH · SOUND ON</small></div>}
     </div>
-    <div className="hunt-bottom"><span>01 / LOOK FOR THE WHITE GHOST</span><span>02 / TAP HIM BEFORE HE VANISHES</span><span>MISS A WINDOW: −2 POINTS</span></div>
+    <div className="hunt-bottom"><span>01 / LOOK FOR THE FLOATING GHOST</span><span>02 / TAP HIM BEFORE HE VANISHES</span><span>STREAK ×{combo || 0} / BONUS POINTS</span></div>
   </div>;
 }
