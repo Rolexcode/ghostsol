@@ -90,3 +90,4 @@ body.site-entered .hero-video{animation:city-focus 1.7s cubic-bezier(.16,.84,.18
 @media(prefers-reduced-motion:reduce){.hunt-sky,.roaming-ghost,.roaming-feedback img,.roaming-ghost:after,.hunt-scene.is-haunted:after{animation:none}}
 
 .hunt-overlay{background:linear-gradient(#080a0bb0,#080a0b65 40%,#080a0b82 75%,#080a0bc5);backdrop-filter:none}.hunt-overlay h2,.hunt-overlay p,.hunt-overlay .play-kicker{text-shadow:0 3px 20px #000,0 1px 5px #000}
+.play-page:fullscreen{width:100%;height:100%;min-height:0}.hunt-actions{display:flex;gap:8px;align-items:center;margin-left:auto}@media(max-width:800px){.hunt-actions{gap:6px}.hunt-actions .hunt-sound{font-size:8px}.hunt-bottom>span:first-child{max-width:34%;font-size:7px}}

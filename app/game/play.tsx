@@ -20,6 +20,7 @@ export default function GhostGame() {
   const [feedback, setFeedback] = useState<{ slot: number; text: string; id: number } | null>(null);
   const [best, setBest] = useState(0);
   const [soundOn, setSoundOn] = useState(true);
+  const [expanded, setExpanded] = useState(false);
   const modeRef = useRef<Mode>('ready'), popRef = useRef<Pop>(null), scoreRef = useRef(0), comboRef = useRef(0);
   const startAt = useRef(0), previousSlot = useRef(-1), sequence = useRef(0), generation = useRef(0), sound = useRef<AudioContext | null>(null), ambience = useRef<HTMLAudioElement | null>(null), soundEnabled = useRef(true);
   const spawnTimer = useRef<ReturnType<typeof setTimeout> | null>(null), vanishTimer = useRef<ReturnType<typeof setTimeout> | null>(null), frame = useRef(0);
@@ -134,9 +135,19 @@ export default function GhostGame() {
     } else ambience.current?.pause();
   };
 
+  const toggleFullscreen = async () => {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else await document.querySelector('.play-page')?.requestFullscreen();
+      setExpanded(Boolean(document.fullscreenElement));
+    } catch { /* The viewport layout still fills the available browser screen. */ }
+  };
+
   useEffect(() => {
     try { setBest(Number(localStorage.getItem('ghostsol-best') || 0)); } catch { /* optional */ }
-    return () => { generation.current++; stopTimers(); ambience.current?.pause(); ambience.current = null; sound.current?.close().catch(() => {}); sound.current = null; };
+    const syncFullscreen = () => setExpanded(Boolean(document.fullscreenElement));
+    document.addEventListener('fullscreenchange', syncFullscreen);
+    return () => { document.removeEventListener('fullscreenchange', syncFullscreen); generation.current++; stopTimers(); ambience.current?.pause(); ambience.current = null; sound.current?.close().catch(() => {}); sound.current = null; };
   }, []);
 
   return <div className="hunt-shell">
@@ -151,6 +162,6 @@ export default function GhostGame() {
       <span className="hunt-foreground" aria-hidden="true"/>
       {mode !== 'playing' && <div className="hunt-overlay"><span className="play-kicker">{mode === 'ended' ? 'SIGHTING ENDED / FILE SAVED' : 'A SIGHTING IS ABOUT TO BEGIN'}</span><h2>{mode === 'ended' ? 'DID YOU SEE HIM?' : 'HE IS IN THE CITY.'}</h2><p>{mode === 'ended' ? `You caught ${caught} ghosts and scored ${score} points. He will be back.` : 'He appears without warning. Tap the ghost before he disappears. You have 40 seconds.'}</p><button type="button" onClick={begin}>{mode === 'ended' ? 'PLAY AGAIN ↗' : 'ENTER THE CITY ↗'}</button><small>TURN UP YOUR SOUND · LOOK EVERYWHERE</small></div>}
     </div>
-    <div className="hunt-bottom"><span>01 / LOOK FOR THE FLOATING GHOST</span><span>STREAK ×{combo || 0} / BONUS POINTS</span><button type="button" className="hunt-sound" onClick={toggleSound} aria-pressed={soundOn}>{soundOn ? '♪ SOUND ON' : '♪ SOUND OFF'}</button></div>
+    <div className="hunt-bottom"><span>01 / LOOK FOR THE FLOATING GHOST</span><span>STREAK ×{combo || 0} / BONUS POINTS</span><div className="hunt-actions"><button type="button" className="hunt-sound" onClick={toggleSound} aria-pressed={soundOn}>{soundOn ? '♪ SOUND ON' : '♪ SOUND OFF'}</button><button type="button" className="hunt-sound" onClick={toggleFullscreen} aria-label={expanded ? 'Exit full screen' : 'Enter full screen'}>{expanded ? '↙ EXIT FULL SCREEN' : '⛶ FULL SCREEN'}</button></div></div>
   </div>;
 }
