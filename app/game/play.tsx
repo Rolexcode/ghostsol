@@ -88,9 +88,9 @@ export default function GhostGame() {
     if (!sound.current) sound.current = new AudioContext();
     sound.current.resume().catch(() => {});
     if (!ambience.current) {
-      ambience.current = new Audio('/assets/ghostsol-pulse.m4a');
+      ambience.current = new Audio('/assets/ghost-city-score.m4a');
       ambience.current.loop = true;
-      ambience.current.volume = .68;
+      ambience.current.volume = .85;
     }
     ambience.current.currentTime = 0;
     if (soundEnabled.current) ambience.current.play().catch(() => {});
@@ -141,21 +141,15 @@ export default function GhostGame() {
 
   return <div className="hunt-shell">
     <div className="hunt-hud"><div><small>TIME LEFT</small><strong>{seconds.toString().padStart(2, '0')}<i>s</i></strong></div><div><small>GHOSTS CAUGHT</small><strong>{caught.toString().padStart(2, '0')}</strong></div><div><small>SCORE</small><strong>{score.toString().padStart(3, '0')}</strong></div><div><small>PERSONAL BEST</small><strong>{best.toString().padStart(3, '0')}</strong></div></div>
-    <div className="hunt-scene">
-      <div className="hunt-sky" aria-hidden="true"><span className="hunt-moon"/><span className="hunt-fog"/></div>
-      <div className="hunt-building"><div className="hunt-roof">GHOSTSOL <span>CAMERA 03 — 03:14 AM</span></div>
-        <div className="hunt-windows">{Array.from({ length: 9 }, (_, slot) => <div key={slot} className="hunt-window" aria-hidden="true">
-          <span className="window-depth"/><span className="window-glass"/>
-          <span className="window-number">0{slot + 1}</span>
-        </div>)}</div>
-        <div className="hunt-building-base"><span>THE CITY SWEARS IT SAW NOTHING.</span><span>● REC</span></div>
-      </div>
+    <div className={`hunt-scene ${pop ? 'is-haunted' : ''}`}>
+      <div className="hunt-sky" aria-hidden="true"><span className="hunt-fog"/></div>
+      <span className="sighting-camera" aria-hidden="true">● REC &nbsp; / &nbsp; 03:14 AM</span>
       {pop && <button type="button" key={pop.id} className="roaming-ghost" style={{ left: `${SIGHTINGS[pop.slot][0]}%`, top: `${SIGHTINGS[pop.slot][1]}%` }} onClick={() => catchGhost(pop.slot)} aria-label="Catch the floating ghost">
         <span className="ghost-figure"><img src="/assets/ghost-game.webp" alt="" draggable={false}/></span>
       </button>}
-      {feedback && <span className={`roaming-feedback ${feedback.text === 'VANISHED' || feedback.text === 'EMPTY' ? 'miss' : ''}`} key={feedback.id} style={{ left: `${SIGHTINGS[feedback.slot][0]}%`, top: `${SIGHTINGS[feedback.slot][1]}%` }}>{feedback.text}</span>}
+      {feedback && <span className={`roaming-feedback ${feedback.text === 'VANISHED' || feedback.text === 'EMPTY' ? 'miss' : ''}`} key={feedback.id} style={{ left: `${SIGHTINGS[feedback.slot][0]}%`, top: `${SIGHTINGS[feedback.slot][1]}%` }}><img src="/assets/ghost-game.webp" alt="" draggable={false}/><b>{feedback.text}</b></span>}
       <span className="hunt-foreground" aria-hidden="true"/>
-      {mode !== 'playing' && <div className="hunt-overlay"><span className="play-kicker">{mode === 'ended' ? 'SIGHTING ENDED / FILE SAVED' : 'A SIGHTING IS ABOUT TO BEGIN'}</span><h2>{mode === 'ended' ? 'DID YOU SEE HIM?' : 'CATCH THE GHOST.'}</h2><p>{mode === 'ended' ? `You caught ${caught} ghosts and scored ${score} points. The ghost will be back.` : 'He floats through the city, then vanishes. Tap him before he disappears. You have 40 seconds. Sound on for the full sighting.'}</p><button type="button" onClick={begin}>{mode === 'ended' ? 'PLAY AGAIN ↗' : 'START SIGHTING ↗'}</button><small>APPEAR → TAP → VANISH · SOUND ON</small></div>}
+      {mode !== 'playing' && <div className="hunt-overlay"><span className="play-kicker">{mode === 'ended' ? 'SIGHTING ENDED / FILE SAVED' : 'A SIGHTING IS ABOUT TO BEGIN'}</span><h2>{mode === 'ended' ? 'DID YOU SEE HIM?' : 'HE IS IN THE CITY.'}</h2><p>{mode === 'ended' ? `You caught ${caught} ghosts and scored ${score} points. He will be back.` : 'He appears without warning. Tap the ghost before he disappears. You have 40 seconds.'}</p><button type="button" onClick={begin}>{mode === 'ended' ? 'PLAY AGAIN ↗' : 'ENTER THE CITY ↗'}</button><small>TURN UP YOUR SOUND · LOOK EVERYWHERE</small></div>}
     </div>
     <div className="hunt-bottom"><span>01 / LOOK FOR THE FLOATING GHOST</span><span>STREAK ×{combo || 0} / BONUS POINTS</span><button type="button" className="hunt-sound" onClick={toggleSound} aria-pressed={soundOn}>{soundOn ? '♪ SOUND ON' : '♪ SOUND OFF'}</button></div>
   </div>;
