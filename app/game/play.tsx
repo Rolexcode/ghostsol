@@ -19,21 +19,31 @@ export default function GhostGame() {
   const [seconds, setSeconds] = useState(ROUND);
   const [feedback, setFeedback] = useState<{ slot: number; text: string; id: number } | null>(null);
   const [best, setBest] = useState(0);
+  const [soundOn, setSoundOn] = useState(true);
   const modeRef = useRef<Mode>('ready'), popRef = useRef<Pop>(null), scoreRef = useRef(0), comboRef = useRef(0);
-  const startAt = useRef(0), previousSlot = useRef(-1), sequence = useRef(0), generation = useRef(0), sound = useRef<AudioContext | null>(null), ambience = useRef<HTMLAudioElement | null>(null);
+  const startAt = useRef(0), previousSlot = useRef(-1), sequence = useRef(0), generation = useRef(0), sound = useRef<AudioContext | null>(null), ambience = useRef<HTMLAudioElement | null>(null), soundEnabled = useRef(true);
   const spawnTimer = useRef<ReturnType<typeof setTimeout> | null>(null), vanishTimer = useRef<ReturnType<typeof setTimeout> | null>(null), frame = useRef(0);
 
   const cue = useCallback((kind: 'appear' | 'catch' | 'miss') => {
-    const ac = sound.current; if (!ac || ac.state !== 'running') return;
+    const ac = sound.current; if (!soundEnabled.current || !ac || ac.state !== 'running') return;
     const now = ac.currentTime, osc = ac.createOscillator(), gain = ac.createGain();
-    osc.type = kind === 'appear' ? 'triangle' : 'sine';
-    const pitch = kind === 'catch' ? 570 : kind === 'miss' ? 125 : 185;
+    osc.type = kind === 'appear' ? 'sawtooth' : 'sine';
+    const pitch = kind === 'catch' ? 570 : kind === 'miss' ? 125 : 245;
     osc.frequency.setValueAtTime(pitch, now);
-    osc.frequency.exponentialRampToValueAtTime(kind === 'catch' ? 880 : kind === 'miss' ? 65 : 270, now + .22);
+    osc.frequency.exponentialRampToValueAtTime(kind === 'catch' ? 880 : kind === 'miss' ? 65 : 105, now + .22);
     gain.gain.setValueAtTime(.001, now);
-    gain.gain.exponentialRampToValueAtTime(kind === 'appear' ? .025 : .065, now + .025);
+    gain.gain.exponentialRampToValueAtTime(kind === 'appear' ? .075 : .095, now + .025);
     gain.gain.exponentialRampToValueAtTime(.001, now + .25);
-    osc.connect(gain).connect(ac.destination); osc.start(now); osc.stop(now + .26);
+    const filter = ac.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = kind === 'appear' ? 680 : 1500;
+    osc.connect(filter).connect(gain).connect(ac.destination); osc.start(now); osc.stop(now + .26);
+    if (kind === 'appear') {
+      const length = Math.floor(ac.sampleRate * .24), buffer = ac.createBuffer(1, length, ac.sampleRate), samples = buffer.getChannelData(0);
+      for (let i = 0; i < length; i++) samples[i] = (Math.random() * 2 - 1) * (1 - i / length);
+      const hiss = ac.createBufferSource(), hissFilter = ac.createBiquadFilter(), hissGain = ac.createGain();
+      hiss.buffer = buffer; hissFilter.type = 'bandpass'; hissFilter.frequency.setValueAtTime(1150, now); hissFilter.frequency.exponentialRampToValueAtTime(370, now + .24);
+      hissGain.gain.setValueAtTime(.12, now); hissGain.gain.exponentialRampToValueAtTime(.001, now + .24);
+      hiss.connect(hissFilter).connect(hissGain).connect(ac.destination); hiss.start(now); hiss.stop(now + .24);
+    }
   }, []);
 
   const stopTimers = () => {
@@ -78,12 +88,12 @@ export default function GhostGame() {
     if (!sound.current) sound.current = new AudioContext();
     sound.current.resume().catch(() => {});
     if (!ambience.current) {
-      ambience.current = new Audio('/assets/ghostsol-pulse.ogg');
+      ambience.current = new Audio('/assets/ghostsol-pulse.m4a');
       ambience.current.loop = true;
-      ambience.current.volume = .27;
+      ambience.current.volume = .68;
     }
     ambience.current.currentTime = 0;
-    ambience.current.play().catch(() => {});
+    if (soundEnabled.current) ambience.current.play().catch(() => {});
     modeRef.current = 'playing'; popRef.current = null; scoreRef.current = 0; comboRef.current = 0; previousSlot.current = -1;
     setMode('playing'); setScore(0); setCaught(0); setCombo(0); setPop(null); setFeedback(null); setSeconds(ROUND);
     startAt.current = performance.now();
@@ -115,6 +125,15 @@ export default function GhostGame() {
     spawnTimer.current = setTimeout(() => spawn(token), 250 + Math.random() * 190);
   };
 
+  const toggleSound = () => {
+    soundEnabled.current = !soundEnabled.current;
+    setSoundOn(soundEnabled.current);
+    if (soundEnabled.current && modeRef.current === 'playing') {
+      sound.current?.resume().catch(() => {});
+      ambience.current?.play().catch(() => {});
+    } else ambience.current?.pause();
+  };
+
   useEffect(() => {
     try { setBest(Number(localStorage.getItem('ghostsol-best') || 0)); } catch { /* optional */ }
     return () => { generation.current++; stopTimers(); ambience.current?.pause(); ambience.current = null; sound.current?.close().catch(() => {}); sound.current = null; };
@@ -132,12 +151,12 @@ export default function GhostGame() {
         <div className="hunt-building-base"><span>THE CITY SWEARS IT SAW NOTHING.</span><span>● REC</span></div>
       </div>
       {pop && <button type="button" key={pop.id} className="roaming-ghost" style={{ left: `${SIGHTINGS[pop.slot][0]}%`, top: `${SIGHTINGS[pop.slot][1]}%` }} onClick={() => catchGhost(pop.slot)} aria-label="Catch the floating ghost">
-        <span className="ghost-shape"><span className="ghost-shine"/><span className="ghost-glasses"/><span className="ghost-smile"/><span className="ghost-chain">$</span></span>
+        <span className="ghost-figure"><img src="/assets/ghost-game.webp" alt="" draggable={false}/></span>
       </button>}
       {feedback && <span className={`roaming-feedback ${feedback.text === 'VANISHED' || feedback.text === 'EMPTY' ? 'miss' : ''}`} key={feedback.id} style={{ left: `${SIGHTINGS[feedback.slot][0]}%`, top: `${SIGHTINGS[feedback.slot][1]}%` }}>{feedback.text}</span>}
       <span className="hunt-foreground" aria-hidden="true"/>
       {mode !== 'playing' && <div className="hunt-overlay"><span className="play-kicker">{mode === 'ended' ? 'SIGHTING ENDED / FILE SAVED' : 'A SIGHTING IS ABOUT TO BEGIN'}</span><h2>{mode === 'ended' ? 'DID YOU SEE HIM?' : 'CATCH THE GHOST.'}</h2><p>{mode === 'ended' ? `You caught ${caught} ghosts and scored ${score} points. The ghost will be back.` : 'He floats through the city, then vanishes. Tap him before he disappears. You have 40 seconds. Sound on for the full sighting.'}</p><button type="button" onClick={begin}>{mode === 'ended' ? 'PLAY AGAIN ↗' : 'START SIGHTING ↗'}</button><small>APPEAR → TAP → VANISH · SOUND ON</small></div>}
     </div>
-    <div className="hunt-bottom"><span>01 / LOOK FOR THE FLOATING GHOST</span><span>02 / TAP HIM BEFORE HE VANISHES</span><span>STREAK ×{combo || 0} / BONUS POINTS</span></div>
+    <div className="hunt-bottom"><span>01 / LOOK FOR THE FLOATING GHOST</span><span>STREAK ×{combo || 0} / BONUS POINTS</span><button type="button" className="hunt-sound" onClick={toggleSound} aria-pressed={soundOn}>{soundOn ? '♪ SOUND ON' : '♪ SOUND OFF'}</button></div>
   </div>;
 }
